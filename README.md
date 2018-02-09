@@ -1,0 +1,2 @@
+# GameNote
+记录
