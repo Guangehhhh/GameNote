@@ -71,7 +71,7 @@
     - 则现有的对象将被破坏，新的对​​象将被创建
 
 # FObjectInitializer
-- 内部类在调用真正的C ++构造函数后 最终实现UObject创建（初始化属性）
+- 内部类在调用真正的C++构造函数后 最终实现UObject创建（初始化属性）
 - GetArchetype
   - 返回此对象稍后将复制属性的原型
 - GetClass
