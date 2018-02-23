@@ -1,47 +1,34 @@
 ## Editor
-- FEditorUndoClient
-
+- FAIGraphEditor : public FEditorUndoClient
+  - 包含Spawn各种SWidget函数
+  - 创建Graph
 - UEdGraph
-  - 包含一个语法GraphSchema
-  -
-- UEdGraphNode
+  - 包含一个语法GraphSchema 和 Node数组
+  - UEdGraphNode
 
-- FEdGraphSchemaActio
+  - UEdGraphSchema
+    - 获取所有可以执行的操作，如右键单击图形或从图形上拖动释放图形
 
-- UEdGraphSchema
-  - 获取所有可以执行的操作，如右键单击图形或从图形上拖动释放图形
-  -
+
 - SGraphPin
-
 - SGraphNode
 
 - IDetailCustomization
-
 - IDetailLayoutBuilder
 
-  - FAssetTypeActions_MyQuest::OpenAssetEditor
-    - FMyQuestEditorModule::CreateMyQuestEditor
-      - FMyQuestEditor::InitMyQuestAssetEditor
-        - FTabManager::NewLayout
-          - FAssetEditorToolkit::InitAssetEditor
-            - FToolkitManager::RegisterNewToolkit
-              - ToolkitHost->OnToolkitHostingStarted( NewToolkit );
-              - FMyQuestEditor::RegisterTabSpawners
-            - SetupInitialContent
-              - RestoreFromLayout(DefaultLayout);
-                - RestoreArea(ThisArea, ParentWindow, bEmbedTitleAreaContent);
-                  - RestoreSplitterContent
-                    - FTabManager::SpawnTab
-                      - SpawnTab_UpdateGraph
-                        - MyGraph->Initialize();
-                        - CreateGraphEditorWidget(QuestAsset->EdGraph)
-	            - GenerateMenus(bCreateDefaultStandaloneMenu);
-          - FModuleManager::LoadModuleChecked<FMyQuestEditorModule>("MyQuestEditor");
-          - AddMenuExtender
-          - BindCommands();
-	        - ExtendToolbar();
-          - RegenerateMenusAndToolbars();
 
+## 从Asset打开编辑器流程
+- 语言描述
+- FAssetTypeActions_BehaviorTree::OpenAssetEditor
+  - FAssetEditorManager::Get().FindEditorForAsset
+  - InitBehaviorTreeEditor
+    - InitAssetEditor
+    - BindCommonCommands();
+		- ExtendMenu();
+		- CreateInternalWidgets();
+
+# Dubug
+- 参照 FBehaviorTreeDebugger
 
 # 放置
   - FAISchemaAction_NewNode::PerformAction  
