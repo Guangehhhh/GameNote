@@ -24,8 +24,10 @@
   - 立即清除跳转输入，以允许移动事件触发下一次更新
   - StartNewPhysics 位移的核心逻辑
 
+  - UpdateCharacterStateAfterMovement
   - PhysicsRotation 没有RootMotion情况下更新Rotation
-  - 运动完成后处理旋转
+  - Apply Root Motion rotation after movement is complete
+    - 运动完成后处理旋转
 
   - RootMotionParams清空
 
