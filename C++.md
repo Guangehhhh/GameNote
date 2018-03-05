@@ -7,12 +7,17 @@
 - atoi
   - 字符串转换整数
     - nulstr变成0
-- typeid(ST).hash_code()
+- typeid().name（）
+  - 获取类型名称  int double*
+- std::type_info::hash_code
+- std::reference_wrapper<const std::type_info>
+- std::declval
 # Other   
 - assert
 - virtual functions
 - constexpr
 - dealtype
+  - 推倒式子得出类型
   - 若参数是无括号的 id 表达式并指名结构化绑定，则 decltype 产生被引用类型（描述于结构化绑定声明的规定）。
   - 若参数为无括号的 id 表达式或无括号的类成员访问表达式，则 decltype 产生以此表达式命名的实体的类型
     - 若无这种实体，或该参数命名某重载函数，则程序为病式
@@ -41,7 +46,6 @@
 - 内存管理和资源缓存
     - C++中，内存区分为5个区，分别是堆、栈、全局/静态存储区、常量存储区
     -
-- 熟悉当前的引擎架构；熟悉动画粒子物理等模块的核心原理和工作方式
  - strcpy strlen
  - 在标准c++中，int的定义长度要依靠你的机器的字长，也就是说，如果你的机器是32位的，int的长度为32位，如果你的机器是64位的，那么int的标准长度就是64位
 
