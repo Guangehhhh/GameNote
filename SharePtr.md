@@ -5,3 +5,5 @@
 # 虚幻中的智能指针
 - SharedPointerInternals::EnableSharedFromThis(this, InObject, InObject);
 - SharedPointerInternals::FSharedReferencer< Mode > SharedReferenceCount;
+- FReferenceControllerBase
+- FReferenceControllerOps

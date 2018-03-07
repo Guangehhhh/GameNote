@@ -7,6 +7,8 @@
 - atoi
   - 字符串转换整数
     - nulstr变成0
+- fmod
+- fabs
 - typeid().name（）
   - 获取类型名称  int double*
 - std::type_info::hash_code
@@ -44,12 +46,12 @@
 
 
 - 内存管理和资源缓存
-    - C++中，内存区分为5个区，分别是堆、栈、全局/静态存储区、常量存储区
-    -
- - strcpy strlen
- - 在标准c++中，int的定义长度要依靠你的机器的字长，也就是说，如果你的机器是32位的，int的长度为32位，如果你的机器是64位的，那么int的标准长度就是64位
+  - C++中，内存区分为5个区，分别是堆、栈、全局/静态存储区、常量存储区
 
-- FILE* fopen(const char*filename,const*char* mode)
+ - strcpy strlen
+ - 在标准c++中，int的定义长度要依靠你的机器的字长，也就是说，如果你的机器是32位的，int的长度为32位
+  - 如果你的机器是64位的，那么int的标准长度就是64位
+
 - FILE* fopen(const char*filename,const*char* mode)
 - fprintf() fscanf()
 
