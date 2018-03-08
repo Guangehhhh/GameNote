@@ -1,5 +1,5 @@
 # 公司内网
-http://thinkfungame.hanbiro.net/groupware/?category=index&section=main
+
 # Perforce
 - 学习
 - Server
