@@ -26,3 +26,29 @@
 
 # FLinkerSave
 - 负责将内存Package中的对象存储到uasset文件
+
+
+# SaveGame
+- TArray<uint8> ObjectBytes
+- FMemoryWriter MemoryWriter(ObjectBytes, true);
+- FObjectAndNameAsStringProxyArchive Ar(MemoryWriter, false);
+- SaveGameObject->Serialize(Ar);
+# LoadGame
+- TArray<uint8> ObjectBytes;
+- bool bSuccess = SaveSystem->LoadGame(false, * SlotName, UserIndex, ObjectBytes);
+- FMemoryReader MemoryReader(ObjectBytes, true);
+- UClass* SaveGameClass = FindObject<UClass>(ANY_PACKAGE, * SaveGameClassName);
+- OutSaveGameObject = NewObject<USaveGame>(GetTransientPackage(), SaveGameClass);
+- FObjectAndNameAsStringProxyArchive Ar(MemoryReader, true);
+- OutSaveGameObject->Serialize(Ar);
+
+# SaveJason
+- 创建JasonObject 然后调用Set相关变量函数
+- 创建FString OutPut
+- 创建TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
+- 调用FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
+# LoadJason
+- TSharedPtr<FJsonObject> JsonReaderObject;
+- TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(OutputString);
+- FJsonSerializer::Deserialize(Reader, JsonReaderObject)
+-  JsonReaderObject->GetStringField
