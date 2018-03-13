@@ -1,0 +1,20 @@
+## LoadMap
+- make sure level streaming isn't frozen
+- FCoreUObjectDelegates::PreLoadMap.Broadcast(URL.Map);
+- UTexture2D::CancelPendingTextureStreaming();
+- clean up any per-map loaded packages for the map we are leaving
+- cleanup the existing per-game pacakges
+- FlushAsyncLoading
+- CancelPendingMapChange
+- WorldContext.SeamlessTravelHandler.CancelTravel();
+- double	StartTime = FPlatformTime::Seconds();
+- GInitRunaway();
+- Unload the current world
+- trim memory to clear up allocations from the previous level
+- IStreamingManager::Get().CancelForcedResources();
+- appDefragmentTexturePool();
+- VerifyLoadMapWorldCleanup();
+-If this world is a PIE instance, we need to check if we are traveling to another PIE instance's world.
+	- If we are, we need to set the PIERemapPrefix so that we load a copy of that world, instead of loading the
+	- PIE world directly.
+-
