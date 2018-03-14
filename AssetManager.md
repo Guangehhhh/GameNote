@@ -1,7 +1,4 @@
 # AssetLoad
-- 使用强指针UObject 属性引用一个资源，那么当加载包含该属性的对象时将会加载那个资源
-- 使用和强指针一样的用户界面来引用特定的资源，而不是总是加载引用的资源
-- 请使用 FStringAssetReference 或 TAssetPtr
 # FStringAssetReference
   - 是一个简单的结构体，包含了一个具有资源完整名称的字符串
   - 如果您在类中创建一个那种类型的属性，那么它将会显示在编辑器中，就像是个 UObject * 属性一样
@@ -9,13 +6,10 @@
   - TryLoad()
     - 调用LoadObject
     - 循环迭代UObjectRedirector的DestinationObject
-
   - ResolveObject()
     - 调用FindObject()
     - 循环迭代UObjectRedirector的DestinationObject
-
   - SetPath(FString)
-    -
 # TAssetPtr
   - TAssetPtr基本上就是一个封装了 FStringAssetReference 的 TWeakObjectPtr
   - 它使用一个特定的类作为模板，以便您能限制编辑器用户界面，使其仅允许选择特定的类
@@ -41,7 +35,7 @@
 # FAssetData
 -  A struct to hold important information about an assets found by the Asset Registry
   This struct is transient and should never be serialized
-- 
+-
 
 # CreateAsset流程
 - void SAssetView::AssetRenameCommit
@@ -96,7 +90,6 @@
 - UAssetManager :: GetIfValid
 - 与AssetRegistry一起用
 - 具体应用可以参考DataAsset UKismetSystemLibrary::GetObjectFromPrimaryAssetId
-
 
 
 # FStreamableManager SynchronousLoad
