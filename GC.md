@@ -82,6 +82,12 @@
       - 如果它有父类（GetSuperClass()），那么就会调用父类的AssembleReferenceTokenStream()并把父类的添加到数组的前面
       - 同时会处理GCRT_EndofStream的特殊情况，最后加上GCRT_EndOfStream到记号流里面去，并设置CLASS_TokenStreamAssembled标记   
   - UObjectProperty::EmitReferenceInfo的实现
+
+# ReferenceToken
+- 在UObject体系中,每个类都有一个UClass实例用于描述该类的反射信息，使用UProperty来描述每个类成员变量
+  - 但是在GC中如果直接遍历UProperty来进行扫描对象引用的话，效率会比较低(因为有许多非Object引用型的Property)
+  - 所以ReferenceToken就运用而生了，ReferenceToken是一组token流，描述了类中的对象引用情况
+
 # FGCReferenceProcessor
 # FGCCollector
 - 继承自FReferenceCollector，HandleObjectReference()和HandleObjectReferences()都调用了FGCReferenceProcessor的HandleObjectReference()方法来进行UObject的可达性分析
