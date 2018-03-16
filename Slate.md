@@ -5,12 +5,14 @@
 - LeafWidget
   - 不可再分的单元；组件层次的最下层次节点；直接继承自SWidget；没有child Slot
   - 负责最基础的单元信息显示
-  - 目前的LeafWidget有STextBlock, SImage, SColorBlock, SCircularThrobber, SEditableText,    SColorWheel, SSlider,SSpacer, SProgressBar...
+  - 目前的LeafWidget有
+		- STextBlock, SImage, SColorBlock, SCircularThrobber, SEditableText,
+		- SColorWheel, SSlider,SSpacer, SProgressBar...
 
 - CompoundWidget
   - widgets with a fixed number of explicitly named child slots定义稍微复杂的组件
-  - SButton、SBorder、SCheckBox等
-  - CompoundWidget内容可根据自己的需求添加  , 可以是很复杂的Page Widget也可是简单实用的控件，- 在Construct里面添加子节点
+  - 例如：SButton、SBorder、SCheckBox等
+  - CompoundWidget内容可根据自己的需求添加 , 可以是很复杂的Page Widget也可是简单实用的控件，- 在Construct里面添加子节点
   - 如SButton中包含Sborder、STextBlock
   - 内部layout和width、height的控制
 
@@ -40,9 +42,10 @@
 - RichTextBlock
 - WeakWidget
 
-- 使用的时候用SNEW操作符、或者SASSIGNNEW操作符
-- 然后对options进行修改；SNew创建一个widget对象，要加入DisplayObjectList才能绘制
-- SAssignNew创建一个widget对象并保存该对象的智能指针
+- SNew
+	- SNew创建一个widget对象，要加入DisplayObjectList才能绘制
+- SASSIGNNEW操作符
+	- SAssignNew创建一个widget对象并保存该对象的智能指针
 
 
 # Widget 创建和绘制
@@ -54,6 +57,23 @@
 - LeafWidget在Onpaint方法中用DrawElement绘制基础的组件
 - SCompoundWdiget 既可以在Onpaint中绘制需要的基础图形也可以在Construct中添加childContent
 布局的控件找出arrangedchildren，每个子组件自己负责Paint
+
+---
+# 绘制 UI的过程分三个部分：
+- 第一部分主要在SlateApplication中PrivateDrawWindow
+	- 主线程Tick驱动控件不断递归调用Paint和Onpaint搜集DrawElement，存入windowelementlist
+- 第二部分 SlateRHIrender中调用FSlateRHIRenderer::DrawWindows_Private
+ 	- 处理windowelementlist中的DrawElement；
+	- 使用FSlateElementBatcher把DrawElement转化成FSlateBatchData批次数据
+		- 具体调用在FSlateElementBatcher::AddElements中；
+	- 针对layer优化的代码和合并drawcall的代码在这部分代码中
+- 第三部分 全渲染线程 使用上一步生成的FSlateBatchData生成renderbatch数据
+	- 然后送进渲染的pipeline	在FSlateRHIRenderer::DrawWindow_RenderThread接口中
+- 合并的过程发生在mainthread ，FSlateApplication执行DrawWindows的接口调用SlateRHIRender做RHI的处理的时候
+	- 算是第二个过程发生的时候。详细过程如下：
+
+
+
 
 
 # Slate Event（事件）
@@ -108,16 +128,15 @@
 - Construct 中定义样式
   - .Padding(TAttribute<FMargin>(this,&SShooterMenuWidget::GetLeftMenuOffset))  
 - 定义FCurveSequence 来计算差
-  LeftMenuScrollOutCurve = LeftMenuWidgetAnimation.AddCurve(0,MenuChangeDuration,ECurveEaseFunction::QuadInOut)
-	LeftMenuWidgetAnimation.Play();
+  - LeftMenuScrollOutCurve = LeftMenuWidgetAnimation.AddCurve(0,MenuChangeDuration,ECurveEaseFunction::QuadInOut)
+	- LeftMenuWidgetAnimation.Play();
 - Tick时修改属性值
   - FMargin SShooterMenuWidget::GetLeftMenuOffset() const
 	   {
 		      const float LeftBoxSizeX = LeftBox-	>GetDesiredSize().X + OutlineWidth * 2;
 		      return FMargin(0, 0,-LeftBoxSizeX + 	LeftMenuScrollOutCurve.GetLerp() * 	LeftBoxSizeX,0);
-
-	     }
-- 对animation状态的检查：
+	   }
+- 对Animation状态的检查：
   - 一般在Tick方法中访问animation的状态
   - IsAtEnd
   - ISAtStart
