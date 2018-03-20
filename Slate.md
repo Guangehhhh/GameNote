@@ -2,21 +2,21 @@
 - #define SNew( WidgetType, ... ) \
 	MakeTDecl<WidgetType>( #WidgetType, __FILE__, __LINE__, RequiredArgs::MakeRequiredArgs(__VA_ARGS__) ) <<= TYPENAME_OUTSIDE_TEMPLATE WidgetType::FArguments()
 
-- LeafWidget
+# LeafWidget
   - 不可再分的单元；组件层次的最下层次节点；直接继承自SWidget；没有child Slot
   - 负责最基础的单元信息显示
   - 目前的LeafWidget有
 		- STextBlock, SImage, SColorBlock, SCircularThrobber, SEditableText,
 		- SColorWheel, SSlider,SSpacer, SProgressBar...
 
-- CompoundWidget
+# CompoundWidget
   - widgets with a fixed number of explicitly named child slots定义稍微复杂的组件
   - 例如：SButton、SBorder、SCheckBox等
   - CompoundWidget内容可根据自己的需求添加 , 可以是很复杂的Page Widget也可是简单实用的控件，- 在Construct里面添加子节点
   - 如SButton中包含Sborder、STextBlock
   - 内部layout和width、height的控制
 
-- SPanel
+# SPanel
   - 一些SCompoundWidget可以负责布局，当然由Slate层暴露给上层使用；
     - 例如SOverLay，SBox， SBorder等
   - SOverlay：有Z-order属性可设置显示层级

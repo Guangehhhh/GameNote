@@ -3,29 +3,37 @@
   - 每个事件基类
 - TGraphTask: FBaseGraphTask
   - 事件模板
+  - TGraphTask<FTaskClass>::CreateTask().ConstructAndDispatchWhenReady
 
 - FTaskThreadBase : public FRunnable, FSingleThreadRunnable
+  - 这个类里放的是事件流TArray<FBaseGraphTask*> NewTasks，以及相应处理事件流的一些方法
   - 执行Task的线程的基类
   - 但外部线程不使用它，因为这些线程是在别处创建的
-  - TArray<FBaseGraphTask*> NewTasks;
-    - 这个类里放的是事件流，以及相应处理事件流的一些方法
 - FNameTaskThread: FTaskThreadBase
   - UE4里内置的用这个，如游戏线程，渲染线程
 
 - FRunnable
   - 线程执行体
 - FRenderingThread: FRunnable
-  - 主要有方法Run调用执行渲染线程的事件流
-- FRunnableThread
-  - 可运行线程的接口, 此接口指定用于管理线程生命周期的方法
+  - Run调用执行渲染线程的事件流
+
+- FRunnableThread 没有继承
+  - 可运行线程的接口, 此接口用于管理线程生命周期
   - 包含一个FRunnable与相应的TLS实现
     - TLS搜了一下，简单来说，相同的变量，每个线程可以有不同的值
+  - 创建线程 Thread = FRunnableThread::Create
+    - 如果只有一个简单的任务
+    - 不用新开线程，直接创建分发一个task就行，会有一个线程去执行
+    - TGraphTask<FTaskClass>::CreateTask().ConstructAndDispatchWhenReady
 
 - FWorkerThread
-  - FTaskThreadBase(事件流)与FRunnableThread(线程执行与TLS)的引用。封装相应对象FTaskThreadBase与FRunnableThread公开
+  - FTaskThreadBase(事件流)与FRunnableThread(线程执行与TLS)的引用
+  - 封装相应对象FTaskThreadBase与FRunnableThread
 
 - FTaskGraphInterface
-  - 可以理解成一个单例管理类，管理所有FWorkerThread(线程与事件流),一般管理类的方法，根据类型得到对应的FWorkerThread等
+  - 可以理解成一个单例管理类
+    - 管理所有FWorkerThread(线程与事件流)
+    - 根据类型得到对应的FWorkerThread
 
 
 

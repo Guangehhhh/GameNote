@@ -73,7 +73,7 @@
     - PrimaryAssetName可以组成整个游戏实例中的asset的唯一的描述。
     - 当客户端在和服务端通信的时候，就可以通过这个字符串来确认某个物件。
     - 例如，"Weapon:BattleAxe_Tier2“本质上和”/Game/Items/Weapons/Axes/BattleAxe_Tier2.BattleAxe_Tier2_C"是一样的。
-- 在FPrimaryAssetId中分别有两个FName的Tag，分别是PrimaryAssetTypeTag和PrimaryAssetNameTag。
+- 在FPrimaryAssetId中分别有两个FName的Tag，分别是PrimaryAssetTypeTag和PrimaryAssetNameTag
   - 因此，当一个Primary Asset被保存了之后，就可以直接在Asset Registry中通过这两个Tag来找到这个Asset
 # Secondary Assets
 - Secondary Assets指的是其他的那些Assets了，例如贴图和声音等
