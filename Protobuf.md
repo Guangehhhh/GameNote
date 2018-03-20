@@ -1,17 +1,22 @@
 ## Protobuf
-- 该程序由两部分组成。第一部分被称为 Writer，第二部分叫做 Reader
-  - Writer 负责将一些结构化的数据写入一个磁盘文件，Reader 则负责从该磁盘文件中读取结构化数据并打印到屏幕上
+- 该程序由两部分组成
+  - 第一部分被称为 Writer
+    - Writer 负责将一些结构化的数据写入一个磁盘文件
+  - 第二部分叫做 Reader
+    - Reader 则负责从该磁盘文件中读取结构化数据并打印到屏幕上
 - 书写 .proto 文件
   - 首先需要编写一个 proto 文件，定义我们程序中需要处理的结构化数据
     - 在 protobuf 的术语中，结构化数据被称为 Message
-  - 一个比较好的习惯是认真对待 proto 文件的文件名。比如将命名规则定于如下：
-    - packageName.MessageName.proto
+  - 一个比较好的习惯是认真对待 proto 文件的文件名。
+    - 比如将命名规则定于如下：
+      - packageName.MessageName.proto
 - 编译 .proto 文件
   - protoc -I=$SRC_DIR --cpp_out=$DST_DIR $SRC_DIR/addressbook.proto
   - 命令将生成两个文件：
     - lm.helloworld.pb.h ， 定义了 C++ 类的头文件
     - lm.helloworld.pb.cc ， C++ 类的实现文件
-  - 后面的 Writer 和 Reader 将使用这个类来对消息进行操作。诸如对消息的成员进行赋值，将消息序列化等等都有相应的方法
+-  Writer 和 Reader 将使用这个类来对消息进行操作
+  - 诸如对消息的成员进行赋值，将消息序列化等等都有相应的方法
 - 编写 writer 和 Reader
   - 需要处理的结构化数据由 .proto 文件描述
     - 经过上一节中的编译过程后，该数据化结构对应了一个 C++ 的类，并定义在 lm.helloworld.pb.h 中
