@@ -11,12 +11,18 @@
     - 循环迭代UObjectRedirector的DestinationObject
   - SetPath(FString)
 # TAssetPtr
-  - TAssetPtr基本上就是一个封装了 FStringAssetReference 的 TWeakObjectPtr
+- TAssetPtr基本上就是一个封装了 FStringAssetReference 的 TWeakObjectPtr
   - 它使用一个特定的类作为模板，以便您能限制编辑器用户界面，使其仅允许选择特定的类
   - 如果所引用的资源存在于内存中，那么 TAssetPtr.Get() 将返回该资源
   - 如果该资源不在内存中，那么您那可以调用 ToStringReference() 来查找它引用的资源
     - 并使用下面介绍的方法加载该资源，然后再次调用 TAssetPtr.Get() 解除对该资源的引用
 
+
+
+- AssetID对应在C++中其实就是TAssetPtr<Template>的数据类型
+  - AssetID相当于保存了一份package的path，并没有真正的保存Asset的数据；
+  - C++中有FStringAssetReference的类型
+  - InAssetId.ToStringReference();
 ---
 # UAssetManager
 - 用于管理primary assets和asset bundles，这些东西在runtime的时候很有用
