@@ -11,6 +11,7 @@
 
 - StaticFindObject
 - StaticLoadObject
+
 - StaticConstructObject_Internal
   - 创建一个对象的新实例
     - 返回的对象将被完全初始化。

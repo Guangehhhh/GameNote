@@ -1,6 +1,8 @@
 # Slate
 - #define SNew( WidgetType, ... ) \
 	MakeTDecl<WidgetType>( #WidgetType, __FILE__, __LINE__, RequiredArgs::MakeRequiredArgs(__VA_ARGS__) ) <<= TYPENAME_OUTSIDE_TEMPLATE WidgetType::FArguments()
+# FSlateApplication
+-
 
 # LeafWidget
   - 不可再分的单元；组件层次的最下层次节点；直接继承自SWidget；没有child Slot
@@ -87,15 +89,13 @@
 # UI事件处理的过程
   - FWindowsApplication在AppWndProc处接受win32传进的message
   - AppWndProc根据message的类型对message分类处理然后执行deferMessage
-
   - deferMessage检查消息是否需要延迟处理
     - 延迟处理则放入处理listDeferredMessages
     - 否则立即执行ProcessDeferredMessage
-
   - ProcessDeferredMessage根据msg类型调用MessageHandler的不同方法开始处理事件
-    - 关  于FWindowsApplication中的MessageHandler其实就是一个FSlateApplication
+    - 关于FWindowsApplication中的MessageHandler其实就是一个FSlateApplication
     - 如鼠标左键mouseDown的处理，则执行
-    - MessageHandler->OnMouseDown( CurrentNativeEventWindowPtr, EMouseButtons::Left );
+    	- MessageHandler->OnMouseDown( CurrentNativeEventWindowPtr, EMouseButtons::Left );
 
   - FSlateApplication作为FWindowsApplication的MessageHandler开始处理具体的事件；
     - 转化msg为 FPointEvent 然后进入ProcessMessage的处理
