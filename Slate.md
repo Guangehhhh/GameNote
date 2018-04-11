@@ -3,6 +3,9 @@
 	MakeTDecl<WidgetType>( #WidgetType, __FILE__, __LINE__, RequiredArgs::MakeRequiredArgs(__VA_ARGS__) ) <<= TYPENAME_OUTSIDE_TEMPLATE WidgetType::FArguments()
 # FSlateApplication
 -
+# FSlateBrush
+- 包含有关如何绘制Slate元素的信息的画笔
+
 
 # LeafWidget
   - 不可再分的单元；组件层次的最下层次节点；直接继承自SWidget；没有child Slot
