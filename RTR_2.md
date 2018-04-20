@@ -117,7 +117,6 @@
       - 表面上某一点的全部反射辐射度可以简单地表示为各BRDF反射辐射度之和。
       - 例如，镜面漫反射即可通过多重BRDF计算加以实现。
 # BRDF的模型分类
-  - 有两种类型的BRDF，isotropic和anisotropic
   - 根据BRDF的定义来直接应用，会有一些无从下手的感觉
     - 而为了方便和高效地使用BRDF数据，大家往往将BRDF组织成为各种参数化的数值模型
 
@@ -188,9 +187,7 @@
 
       -   CAVE
       Database:[http://www1.cs.columbia.edu/CAVE/databases/tvbrdf/about.php](http://link.zhihu.com/?target=http%3A//www1.cs.columbia.edu/CAVE/databases/tvbrdf/about.php)
-# Lambertian漫反射模型
-  - Lambertian反射也称做完全漫反射
-    - 表示各种方向上辐射亮度都一样的反射面，这是一种理想情况，现实中是不存在完全漫反射的
+
 # 次表面散射 Subsurface Scattering
   - 在真实世界中许多物体都是半透明的，比如皮肤、玉、蜡、大理石、牛奶等
     - 当光入射到透明或半透明材料表面时，一部分被反射，一部分被吸收，还有一部分经历透射。
@@ -280,8 +277,39 @@
 # 几何衰减因子
   - Geometry项G，来代表反射光的可见度
     - 遮挡项在某种程度上抵消了microfacet方程中的分母 (n * l)(n* v) ，经常会和其他参数合并成为V项
-# 基于物理的BRDF · 常见模型
-  - Cook-Torrance BRDF模型
+
+
+
+# 基于物理的BRDF
+  - 基于物理的BRDF这个出发点，看看从物理的角度，diffuse和specular来自哪里
+    - 什么决定了材质的diffuse和specular颜色
+    - diffuse是光线折射入物体后，在内部经过散射，重新穿出表面的光
+    - specular是光线在物体表面直接反射的结果，并没有经过转换，还是原来的光
+    - 对于金属（导体）来说，折射入物体的光子会被完全吸收掉
+      - diffuse永远是0，材质的颜色来自于 specular
+    - 对于非金属来说，材质的颜色一部分来自于diffuse，一部分来自于specular
+  - 颜色分布
+    - 控制diffuse和specular的颜色，就一定能在渲染上复现出金属（导体）和塑料（绝缘体）的区别， 甚至介于其间的半导体
+
+    - 找一些现实中的材料，看看它们的diffuse和specular颜色分布究竟如何
+      - 前面说到金属的diffuse = 0，所以你看到的金属颜色，就是它的specular
+      - 同样是specular颜色，非金属则显得弱了很多
+        - 塑料、玻璃、水这些常见的绝缘体，specular都低于0.04
+      - 绝缘体的specular都是单色的
+        - 各个通道的光都会被等同地反射，而不像金属那样有着不同的吸收偏好
+      - 半导体，介于两者之间
+# GBuffer 在BRDF
+  - 按照理论，需要放diffuse和specular颜色，则需要6个通道
+    - 完全超出了GBuffer可以承受的范围
+  - GBuffer里留给diffuse和specular颜色的通道只有4个
+    - 所以游戏引擎常见的做法是，保存个diffuse颜色和specular的亮度
+      - 就当作specular是单色的来处理
+      - 这样显然对于金属不利，也是为什么会画面看着都像塑料的重要原因
+# Lambertian漫反射模型
+  - Lambertian反射也称做完全漫反射
+    - 表示各种方向上辐射亮度都一样的反射面
+      - 这是一种理想情况，现实中是不存在完全漫反射的
+# Cook-Torrance BRDF模型
     - Cook-Torrance模型将物理学中的菲涅尔反射引入了图形学，实现了比较逼真的效果
     - F为菲涅尔反射函数( Fresnel 函数 )
     - G为阴影遮罩函数（Geometry Factor，几何因子），即未被shadow或mask的比例
