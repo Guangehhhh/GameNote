@@ -436,7 +436,7 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
 
 
 
-## 场景代理 SceneProxy
+##  SceneProxy
 - 以对象为维度理解渲染过程
 - 逻辑的世界与渲染的世界
 - 无论是Static Mesh Actor，还是这个Actor 持有的Static Mesh Component 组件
@@ -490,14 +490,3 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
 - 从场景空间投影到2D屏幕区域
 - FViewUniformShaderParameters
   - 视图参数的统一缓冲区 这只会在渲染线程的FSceneView副本中初始化
-
-
-
-
-## UPrimitiveComponent
-- MoveComponentImpl  
-  - 移动相关 ，比较重要
-- Overlap相关函数比较多
-
-## UModelComponent
--
