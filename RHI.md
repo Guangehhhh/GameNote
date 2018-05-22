@@ -379,7 +379,7 @@ passing a different mesh to it each time
         - and you had to provide a shader file—this is why.
       - So now the data input for our base pass vertex shader matches the type of vertex data we’re uploading.
       -  The next issue is that different vertex factories will need different data interpolated between the VS and PS.
-      - Again, the BasePassVertexShader.usf calls generic functions
+        - Again, the BasePassVertexShader.usf calls generic functions
         - GetVertexFactoryIntermediates , VertexFactoryGetWorldPosition ,GetMaterialVertexParameters .
         - If we do another Find in Files we’ll discover that each * VertexFactory.ush has defined
           - these functions to be unique to their own needs.
@@ -551,8 +551,8 @@ deferred until later! We’ll look at that next.
 - As a reminder, this is run for each light in the scene so for any object that has multiple lights affecting it it will be run multiple times
 per pixel.
 - The pixel shader can be quite simple, we’ll be interested more in the functions this pixel shader calls.
-- void RadialPixelMain( float4 InScreenPosition, float4 SVPos,
-out float4 OutColor)
+
+void RadialPixelMain( float4 InScreenPosition, float4 SVPos,out float4 OutColor)
 {
 // Intermediate variables have been removed for brevity
 FScreenSpaceData ScreenSpaceData = GetScreenSpaceData
@@ -651,6 +651,7 @@ ComputeLightProfileMultiplier .
     - some shaders are global (such as the pass that samples the GBuffer and calculates a final color).
     - This means that these shaders are not actually part of the material,
     - so modifying that material won’t cause them to reload.
+
 - Additionally, once you do change one of these Global shaders and restart
   - Unreal is going to re-compile every shader that used that file,
   - so if you edit a common one you’re looking at a near full recompile
@@ -661,6 +662,7 @@ ComputeLightProfileMultiplier .
 -  Worse, if you’re modifying something inside of an #if X_Y section inside the shader,
   - you may get partially through a recompile before hitting a permutation that doesn’t compile.
   -  You can go and fix it, but fixing it makes all the ones we did manage to compile already re-compile.
+
 # Lowering the Overall Number of Permutations
 - Our first goal is to see what settings we can change in the engine or consider  for our materials
   - that will reduce the total number of permutations that need to be compiled.
@@ -692,14 +694,13 @@ ComputeLightProfileMultiplier .
 -  If you disable a shader permutation here and your scene needs it you will get a warning in the viewport,
   - ie: “PROJECT DOES NOT SUPPORT ATMOSPHERIC FOG”
   - when trying to use atmospheric fog and having Support Atmospheric Fog disabled.
+
 # Lighting
-- Allow Static Lighting (Note: Disabling this means lights marked as
-Static will have no influence on your materials. Set them to
-Movable for testing if this is disabled)
+- Allow Static Lighting (Note: Disabling this means lights marked as Static will have no influence on your materials.
+  - Set them to Movable for testing if this is disabled)
 # Shader Permutation Reduction
-- Support Stationary Skylight (Note: Disabling this means sky lights
-marked as Stationary will have no influence on your materials.
-Set them to Movable for testing if this is disabled)
+- Support Stationary Skylight (Note: Disabling this means sky lights marked as Stationary will have no influence on your materials.
+  - Set them to Movable for testing if this is disabled)
 - Support Low Quality Lightmap Shader Permutations
 - Support PointLight WholeSceneShadows
 - Support Atmospheric Fog
@@ -774,70 +775,59 @@ your code compiling under every #if variation.
 # Common #if Defines
 - Below are some common pre-processor defines found in the deferred shading pipeline.
 -  I have put together a list of their intended meaning based on what C++ code triggers them.
-- This will hopefully let you figure out which sections of the deferred pipeline apply to your code as
-you can check the pre-processor define against this list to see what it
-translates into in terms of UE4 settings.
-#if NON_DIRECTIONAL_DIRECT_LIGHTING This is found in
-DeferredLightingCommon.ush but only seems to be defined in
-ForwardLightingCommon.ush as #define
-NON_DIRECTIONAL_DIRECT_LIGHTING
+- This will hopefully let you figure out which sections of the deferred pipeline apply to your code as you can check the pre-processor define against this list to see what it translates into in terms of UE4 settings.
+#if NON_DIRECTIONAL_DIRECT_LIGHTING
+- This is found in DeferredLightingCommon.ush but only seems to be defined in ForwardLightingCommon.ush
+- as #define NON_DIRECTIONAL_DIRECT_LIGHTING
 (TRANSLUCENCY_LIGHTING_VOLUMETRIC_NONDIRECTIONAL ||
 TRANSLUCENCY_LIGHTING_VOLUMETRIC_PERVERTEX_NONDIRECTIONAL) .
 #if SUPPORT_CONTACT_SHADOWS provides support for Unreal’s
-Contact Shadows Feature.
-#if REFERENCE_QUALITY is defined to 0 at the top of
-DeferredLightingCommon.ush—might be for cinematic rendering?
-#if ALLOW_STATIC_LIGHTING is true if the r.AllowStaticLighting
-console variable is set to 1. This matches the Project Settings >
-Rendering option for Static Lighting support.
-#if USE_DEVELOPMENT_SHADERS is true if
-COMPILE_SHADERS_FOR_DEVELOPMENT is true (and the platform
-supports it). COMPILE_SHADERS_FOR_DEVELOPMENT is true if
-r.CompileShadersForDevelopment is set.
-#if TRANSLUCENT_SELF_SHADOWING is defined for objects being
-rendered with a FSelfShadowedTranslucencyPolicy . I believe this
-is for Lit Translucency support.
-#if SIMPLE_FORWARD_DIRECTIONAL_LIGHT and #if
-SIMPLE_FORWARD_SHADING seem to be set during Light Map
-rendering for stationary directional lights.
-#if FORWARD_SHADING is set when r.ForwardShading is set to 1.
+- Contact Shadows Feature.
+#if REFERENCE_QUALITY
+- is defined to 0 at the top of DeferredLightingCommon.ush—might be for cinematic rendering?
+#if ALLOW_STATIC_LIGHTING
+- is true if the r.AllowStaticLighting console variable is set to 1.
+-  This matches the Project Settings > Rendering option for Static Lighting support.
+#if USE_DEVELOPMENT_SHADERS
+- is true #if COMPILE_SHADERS_FOR_DEVELOPMENT is true
+-  (and the platform supports it). COMPILE_SHADERS_FOR_DEVELOPMENT is true
+- if r.CompileShadersForDevelopment is set.
+#if TRANSLUCENT_SELF_SHADOWING
+- is defined for objects being rendered with a FSelfShadowedTranslucencyPolicy .
+- I believe this is for Lit Translucency support.
+#if SIMPLE_FORWARD_DIRECTIONAL_LIGHT and #if SIMPLE_FORWARD_SHADING
+- seem to be set during Light Map rendering for stationary directional lights.
+#if FORWARD_SHADING
+- is set when r.ForwardShading is set to 1.
 
 
 
 # Adding a new Shading Model
-- Unreal supports several common shading models out of the box which
-satisfy the needs of most games. Unreal supports a generalized
-microfacet specular as their default lighting model but has lighting
-models that support high end hair and eye effects as well. These
-shading models may not be the best fit for your game and you may
-wish to tweak them or add entirely new ones, especially for highly
-stylized games.
-Integrating a new lighting model is surprisingly little code but requires
-some patience (as it will require a (nearly) full compile of the engine
-and all shaders). Make sure you check out the section on Iteration once
-you’ve decided to start making incremental changes on your own as
-this can help cut down on the ~10 minute iteration times you will find
-out of the box.
-Most of the code in this post is based on the excellent (but somewhat
-outdated) information by FelixK on their blog series, plus some
-A work in progress shading model that uses stepped lighting
-Images haven’t loaded yet. Please exit printing, wait for images to load,
-and try to print again.
-corrections from the commentators on the various posts. It is highly
-encouraged that you read FelixK’s blog as well, as I have skimmed
-through some of the shader code changes in exchange for explaining
-more about the process and why we’re doing it.
-There are three different areas of the engine we need to modify to
-support a new shading model, the material editor, the material itself
-and the existing shader code. We’re going to tackle these changes one
-area at a time.
+- Unreal supports several common shading models out of the box
+  - which satisfy the needs of most games.
+- Unreal supports a generalized microfacet specular as their default lighting model
+  - but has lighting models that support high end hair and eye effects as well.
+  - These shading models may not be the best fit for your game
+  - and you may wish to tweak them or add entirely new ones, especially for highly stylized games.
+
+- Integrating a new lighting model is surprisingly little code
+  - but requires some patience (as it will require a (nearly) full compile of the engine and all shaders).
+  - Make sure you check out the section on Iteration once you’ve decided to start making incremental changes on your own as
+this can help cut down on the ~10 minute iteration times you will find out of the box.
+- Most of the code in this post is based on the excellent (but somewhat outdated) information by FelixK on their blog series,
+  - plus some A work in progress shading model that uses stepped lighting Images haven’t loaded yet.
+  - Please exit printing, wait for images to load, and try to print again.
+- corrections from the commentators on the various posts.
+- It is  encouraged that you read FelixK’s blog as well,
+  - as I have skimmed through some of the shader code changes in exchange for explaining more about the process and why we’re doing it.
+- There are three different areas of the engine we need to modify to support a new shading model,
+  - the material editor, the material itself , the existing shader code.
+-  We’re going to tackle these changes one area at a time.
 
 # Modifying the Material Editor
-- Our first stop is the EMaterialShadingModel enum inside of
-EngineTypes.h. This enum determines what shows up in the Shading
-Model dropdown inside of the Material Editor. We’re going to add our
-new enum entry MSM_StylizedShadow to the enum right before
-MSM_MAX
+- Our first stop is the EMaterialShadingModel enum inside of EngineTypes.h.
+- This enum determines what shows up in the Shading Model dropdown inside of the Material Editor.
+- We’re going to add our new enum entry MSM_StylizedShadow to the enum right before MSM_MAX
 // Note: Check UMaterialInstance::Serialize if changed!
 UENUM()
 enum EMaterialShadingModel
@@ -847,74 +837,69 @@ MSM_Eye UMETA(DisplayName=”Eye”),
 MSM_StylizedShadow UMETA(DisplayName=”Stylized Shadow”),
 MSM_MAX,
 };
-Enums appear to be serialized by name (if present?) but it’s worth
-adding to the end of the list anyways for any parts of the engine that
-may serialize them by integer value.
-Epic left a comment above the EMaterialShadingModel enum warning
-developers to check the UMaterialInstance::Serialize function if we
-change the enum. It doesn’t look like there’s anything in there that we
-need to change if adding a new shading model so we can ignore it and
-move on. (If you’re curious about what that function does, it looks like
-they did change the order of enum values at one point so the function
-has some code to fix that up depending on the version of the asset that
-is being loaded.)
-Having completed this change the new shading model would show up
-in the Shading Model dropdown inside the Material Editor if we were
-to compile it, but it wouldn’t do anything! FelixK uses the Custom Data
-0 pin to allow artists to set the size of the range for light attenuation.
-We need to modify the code to make the Custom Data 0 pin enabled
-for our custom shading model.
-Open up Material.cpp (not to be confused with the identically named
-file in the Lightmass project) and look for the
-UMaterial::IsPropertyActive function. This function is called for
-each possible pin on the Material. If you are trying to modify a material
-domain (such as decal, post processing, etc.) you will need to pay
-careful attention to the first section of this function where they look at
-each domain and simply specify which pins should be enabled. If you
-are modifying the Shading Model like we are, then it’s a little more
-complicated—there is a switch statement that returns true for each pin
-if it should be active given other properties.
-In our case, we want to enable the MP_CustomData0 pin, so we scroll
-down to the section on MP_CustomData0 and add || ShadingModel ==
-MSM_StylizedShadow to the end of it. When you change the Shading
-Model to Stylized Shadow this pin should become enabled, allowing
-you to connect your material graph to it.
+
+- Enums appear to be serialized by name (if present?)
+  - but it’s worth adding to the end of the list anyways for any parts of the engine
+  - that may serialize them by integer value.
+- Epic left a comment above the EMaterialShadingModel enum warning developers to check the UMaterialInstance::Serialize function
+  - if we change the enum.
+- It doesn’t look like there’s anything in there that we need to change if adding a new shading model so we can ignore it and move on.
+-  (If you’re curious about what that function does,
+    - it looks like they did change the order of enum values at one point so the function has some code to fix that up depending on the version of the asset that is being loaded.)
+- Having completed this change the new shading model would show up in the Shading Model dropdown inside the Material Editor
+  - if we were to compile it, but it wouldn’t do anything!
+  - FelixK uses the Custom Data 0 pin to allow artists to set the size of the range for light attenuation.
+- We need to modify the code to make the Custom Data 0 pin enabled for our custom shading model.
+- Open up Material.cpp (not to be confused with the identically named file in the Lightmass project)
+  - and look for the UMaterial::IsPropertyActive function.
+  - This function is called for each possible pin on the Material.
+  - If you are trying to modify a material domain (such as decal, post processing, etc.)
+  - you will need to pay careful attention to the first section of this function
+    - where they look at each domain and simply specify which pins should be enabled.
+  - If you are modifying the Shading Model like we are,
+    - then it’s a little more complicated
+      - —there is a switch statement that returns true for each pin if it should be active given other properties.
+- In our case, we want to enable the MP_CustomData0 pin,
+  - so we scroll down to the section on MP_CustomData0
+  - and add || ShadingModel == MSM_StylizedShadow to the end of it.
+- When you change the Shading Model to Stylized Shadow this pin should become enabled,
+  - allowing you to connect your material graph to it.
 switch (InProperty)
 {
 // Other cases omitted for brevity
 case MP_CustomData0:
-Active = ShadingModel == MSM_ClearCoat || ShadingModel ==
-MSM_Hair || ShadingModel == MSM_Cloth || ShadingModel ==
-MSM_Eye || ShadingModel == MSM_StylizedShadow;
+Active = ShadingModel == MSM_ClearCoat
+|| ShadingModel ==MSM_Hair
+|| ShadingModel == MSM_Cloth
+|| ShadingModel ==MSM_Eye
+|| ShadingModel == MSM_StylizedShadow;
 Hooray for easy to add dropdown options!
 break;
 }
-It is important to understand that this code only changes the UI in
-the material editor, and you will still need to make sure you use the
-data that is supplied to these pins inside your shader.
-Side Note: Custom Data 0 and Custom Data 1 are single channel
-floating point properties which may or may not be enough extra data
-for your custom shading model. Javad Kouchakzadeh pointed out to
-me that you can create brand new pins which will let you choose how
-the HLSL code gets generated for them. Unfortunately the scope of this
-is a little beyond this tutorial, but may be the subject of a future
-tutorial. If you’re feeling adventurous, check out MaterialShared.cpp
-for the InitializeAttributeMap() function!
+
+- It is important to understand that this code only changes the UI in the material editor,
+  - and you will still need to make sure you use the data that is supplied to these pins inside your shader.
+- Side Note: Custom Data 0 and Custom Data 1 are single channel floating point properties
+  - which may or may not be enough extra data for your custom shading model.
+  - Javad Kouchakzadeh pointed out to me that you can create brand new pins
+    - which will let you choose how the HLSL code gets generated for them.
+  - Unfortunately the scope of this is a little beyond this tutorial,
+    - but may be the subject of a future tutorial.
+  -  If you’re feeling adventurous, check out MaterialShared.cpp for the InitializeAttributeMap() function!
 
 # Modifying the HLSL Pre-Processor Defines
-- Once we have modified the Material Editor to be able to choose our
-new shading model we need to make sure our shaders know when
-they’ve been set to use our shading model!
-Open up MaterialShared.cpp and look for the somewhat massive
-FMaterial::SetupMaterialEnvironment(EShaderPlatform Platform,
+- Once we have modified the Material Editor to be able to choose our new shading model
+  - we need to make sure our shaders know when they’ve been set to use our shading model!
+- Open up MaterialShared.cpp and look for the somewhat massive FMaterial::SetupMaterialEnvironment(EShaderPlatform Platform,
 const FUniformExpressionSet& InUniformExpressionSet,
-FShaderCompilerEnvironment& OutEnvironment) const function. This
-function lets you look at various configuration factors (such as
+FShaderCompilerEnvironment& OutEnvironment) const function.
+- This function lets you look at various configuration factors (such as
 properties on your material) and then modify the OutEnvironment
 variable by adding additional defines.
-In our particular case we’ll scroll down to the section which switches
+- In our particular case we’ll scroll down to the section which switches
 on GetShadingModel() and add our MSM_StylizedShadow case (from
 EngineTypes.h) and give it a string name following the existing pattern.
+
 switch(GetShadingModel())
 {
 // Other cases omitted for brevity
@@ -926,36 +911,33 @@ OutEnvironment.SetDefine(TEXT
 (“MATERIAL_SHADINGMODEL_STYLIZED_SHADOW”), TEXT(“1”));
 break;
 }
-Now, when the Shading Model for the material is set to
-MSM_StylizedShadow the HLSL compiler will set
+
+- Now, when the Shading Model for the material is set to MSM_StylizedShadow the HLSL compiler will set
 MATERIAL_SHADINGMODEL_STYLIZED_SHADOW as a pre-processor define.
-This will allow us to later go #if
-MATERIAL_SHADINGMODEL_STYLIZED_SHADOW within the HLSL code to make
-things that only work on shader permutations that use our shading
-model.
+- This will allow us to later go #if MATERIAL_SHADINGMODEL_STYLIZED_SHADOW within the HLSL code to make
+things that only work on shader permutations that use our shading model.
 # Updating the GBuffer Shading Model ID
-- Now that it is possible to tell when we are building a permutation of
-the shader that uses our lighting model (via the
+- Now that it is possible to tell when we are building a permutation of the shader that uses our lighting model (via the
 MATERIAL_SHADINGMODEL_STYLIZED_SHADOW we can start making changes
-to the shaders. The first thing we need to do is write a new Shading
-Model ID into the GBuffer. This allows the DeferredLightPixelShader to
-know which shading model to try and use when it runs lighting
+to the shaders.
+-  The first thing we need to do is write a new Shading
+Model ID into the GBuffer.
+- This allows the DeferredLightPixelShader to know which shading model to try and use when it runs lighting
 calculations.
-Open DeferredShadingCommon.ush and there is a section in the middle
-that starts with #define SHADINGMODELID_UNLIT . We’re going to add
-our own Shading Model ID to the end of it, and then update
-SHADINGMODELID_NUM .
+- Open DeferredShadingCommon.ush and there is a section in the middle
+that starts with #define SHADINGMODELID_UNLIT .
+- We’re going to add our own Shading Model ID to the end of it, and then update SHADINGMODELID_NUM .
 #define SHADINGMODELID_EYE 9
 #define SHADINGMODELID_STYLIZED_SHADOW 10
 #define SHADINGMODELID_NUM 11
-We’ll need to tell the shaders to write this Shading Model ID into the
-GBuffer, but before we leave this file we should update the Buffer
-Visualization > Shading Model color so that you can tell which pixels in
-your scene are rendered with your shading model. At the bottom of the
-file should be float3 GetShadingModelColor(uint ShadingModelID) .
+- We’ll need to tell the shaders to write this Shading Model ID into the GBuffer,
+  - but before we leave this file we should update the Buffer Visualization > Shading Model color so that you can tell which pixels in
+your scene are rendered with your shading model.
+- At the bottom of the file should be float3 GetShadingModelColor(uint ShadingModelID) .
 We’ll add an entry in both the #if PS4_PROFILE section, as well as the
 switch(ShadingModelID) following the existing patterns. We’ve
 chosen purple simply because the original tutorial did as well.
+
 switch(ShadingModelID)
 {
 // Omitted for brevity
@@ -963,14 +945,12 @@ case SHADINGMODELID_EYE: return float3(0.3f, 1.0f, 1.0f);
 case SHADINGMODELID_STYLIZED_SHADOW: return float3(0.4f,
 0.0f, 0.8f); // Purple
 }
-Now we need to tell the BasePassPixelShader to write the correct ID to
-the Shading Model ID texture. Open up ShadingModelsMaterial.ush
-and look at the SetGBufferForShadingModel function. This function
-allows each shading model to choose how the various PBR data
-channels are written to the FGBufferData struct. The only thing you
-have to do is ensure GBuffer.ShadingModelID is assigned. If we wished
-to use the Custom Data 0 channel from the Material Editor this is
-where you would query the value and write it into the GBuffer as well.
+
+- Now we need to tell the BasePassPixelShader to write the correct ID to the Shading Model ID texture.
+- Open up ShadingModelsMaterial.ush and look at the SetGBufferForShadingModel function.
+- This function allows each shading model to choose how the various PBR data channels are written to the FGBufferData struct.
+- The only thing you have to do is ensure GBuffer.ShadingModelID is assigned.
+- If we wished to use the Custom Data 0 channel from the Material Editor this is where you would query the value and write it into the GBuffer as well.
 #elif MATERIAL_SHADINGMODEL_EYE
 GBuffer.ShadingModelID = SHADINGMODELID_EYE;
 // Omitted for brevity
@@ -983,7 +963,7 @@ GBuffer.CustomData.x = GetMaterialCustomData0
 // missing shading model, compiler should report
 ShadingModelID is not set
 #endif
-We enabled the Custom Data 0 pin in the Editor earlier by changing
+- We enabled the Custom Data 0 pin in the Editor earlier by changing
 the C++ code. Calling GetMaterialCustomData0(…) is what actually
 gets the value and stores it in the GBuffer so that it can be read later in
 our shading model. If you are using the CustomData section of the
@@ -1074,12 +1054,11 @@ Roughness, float3 L, float3 V, half3 N)
 Range, 0.5f + Range, D_GGX(Roughness.y, NoH)) *
 GBuffer.SpecularColor);
 }
-Supporting Lit Translu
+Supporting Lit Translucency
 # Supporting Lit Translucency
-- If we want our shader to work for translucent objects that have to add
-specific support for that—open BasePassPixelShader.usf and find the
-section with the comment “// Volume lighting for lit translucency” and
-add your shading model to the #if statement.
+- If we want our shader to work for translucent objects that have to add specific support for that
+  - —open BasePassPixelShader.usf and find the section with the comment “// Volume lighting for lit translucency”
+  - and add your shading model to the #if statement.
 //Volume lighting for lit translucency
 #if (MATERIAL_SHADINGMODEL_DEFAULT_LIT ||
 MATERIAL_SHADINGMODEL_SUBSURFACE ||
