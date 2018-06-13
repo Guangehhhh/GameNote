@@ -214,7 +214,7 @@
   **预处理阶段的工作过程如下**
   * 设置渲染状态 这个步骤对应函数SetupPrePassView
     * 目的在于关闭颜色写入，打开深度测试与深度写入。
-  * 渲染三个绘制列表
+  * 渲染三个绘制列表DrawList
     * 只绘制深度的列表PositionOnlyDepthDrawList
       * 这个列表里的对象只在深度渲染过程中起作用
     * 深度绘制列表DepthDrawList
@@ -225,7 +225,7 @@
       * 这个阶段会通过ShouldUseAsOccluder 函数询问RenderProxy 是否被当作一个遮挡物体
       * 同时也会配合其他情况（是否为可移动等），决定是否需要在这个阶段绘制
 
-## DrawVisible 绘制可见对象
+## DrawVisible 绘制可见对象  在哪一步？？
 - 绘制可见对象的基础是可见对象列表
   - 尤其是对于静态网格物体而言，是以TStaticMeshDrawList 为单位进行成批绘制的
   - 在绘制之前，每个绘制列表已经进行了排序，尽可能共用同样的绘制状态
@@ -240,7 +240,7 @@
   - 而同一个列表中，这些东西都是一致的，区别只是在于渲染过程具体参数
   - 如顶点缓冲区不同、索引缓冲区不同
 
-载入公共着色器信息
+- 载入公共着色器信息
   -  这是逐列表完成的
   - 对应的函数为SetBoundShaderState 和SetSharedState
     - SetBoundShaderState 载入了需要的着色器
@@ -319,15 +319,16 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
   * 光照渲染与阴影渲染是分离的
     * 阴影渲染是在视口初始化阶段完成，处于整个渲染流水线中非常靠前的位置
 
-- 阴影渲染
-  *  1收集可见光源
-  *  2对收集好的光源进行排序
-  *  3如果是存在基于图块的光照（TiledDeferred-Lighting）
-    * 则通过RenderTiledDeferredLighting 对光照进行计算
-    * 如果是PC 平台
-      * 大部分光照依然使用RenderLight 函数进行光照计算
-  *  4如果当前平台支持着色器模型5（Shader Model 5）
-    * 则会计算反射阴影贴图与LPV 信息
+- 阴影渲染？
+  - 步骤？？
+  -   收集可见光源  
+  -  对收集好的光源进行排序
+  -  如果是存在基于图块的光照（TiledDeferred-Lighting）
+    - 则通过RenderTiledDeferredLighting 对光照进行计算
+    - 如果是PC 平台
+      - 大部分光照依然使用RenderLight 函数进行光照计算
+  -  4如果当前平台支持着色器模型5（Shader Model 5）
+    - 则会计算反射阴影贴图与LPV 信息
 
 - 核心光照渲染部分集中于RenderLight 函数
   - 每个光源都会调用该函数，其遍历所有视口，计算光照强度，并叠加到屏幕颜色上
@@ -341,7 +342,7 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
     * 设置光照相关参数
     * 绘制一个覆盖全屏幕的矩形，调用着色器
 
-  * 非平行光
+  - 非平行光
    * 判断摄像机是否在光照几何体范围内
    * 如果是，关闭深度测试，从而避免背面被遮盖部分不进行光照渲染
    * 否则，打开深度测试以加速渲染
@@ -392,7 +393,6 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
     * 当然由于材质不一定参与全部阶段，这个魔方有很多的空缺
 
 ## 着色器数据选择
-
 * 如何根据当前阶段、当前材质类型、当前顶点工厂类型，获得需要的着色器组合呢?
   * 以一个静态网格物体渲染为例，对着色器数据选择的过程大体描述如下
     * 渲染线程遍历当前场景，添加静态网格到渲染列表
@@ -406,29 +406,28 @@ CW_RGBA , CW_RGBA , CW_RGBA >:: GetRHI () );
     * 该函数的最后一个参数会传入一个结构体，描述了一组渲染动作
       * 其对应的Process 函数会根据传入的光照贴图代理类型来做出不同的渲染方式
       * 在此暂不分析光照贴图相关内容。其调用了AddMesh 函数
-      * 在参数中创建了最重要的DrawingPolicy 绘制代理
-    * 这个代理的类型即对应渲染阶段
-      * 传入参数包括顶点工厂指针和材质代理指针。
-      * 至此，前文描述中的三个决定因素：渲染阶段、顶点工厂类型、材质类型均齐备
-      * 调用Get< 渲染阶段>Shaders 函数：
+
+# 在参数中创建了最重要的DrawingPolicy 绘制代理
+    -  这个代理的类型即对应渲染阶段
+    -  传入参数包括顶点工厂指针和材质代理指针。
+    -  至此，前文描述中的三个决定因素：渲染阶段、顶点工厂类型、材质类型均齐备
+    -  调用Get< 渲染阶段>Shaders 函数：
         * 该函数调用当前传入的材质类型的GetShader 模板函数
           * 从材质对象中抽取出对应的着色器，赋值给对应阶段的着色器变量
-        * 材质（FMaterial）的GetShader 函数则首先以当前的顶点工厂类型的id 为索引
-          * 通过GetMeshShaderMap 函数从OrderedMeshShaderMaps 成员变量中
-          * 查询到对应顶点工厂类型的MeshShaderMap
-        * 随后，调用当前的MeshShaderMap 的GetShader 函数
-          * 以当前着色器类型为参数，查询到实际对应的着色器
-        * 实质上获取一组着色器组合需要的三个变量：
-        * 渲染阶段
-          * 直接用代码区分，以模板形式完成定义，例如通过：
-          * TBasePassPS < TUniformLightMapPolicy < Policy >, true >
-        * 顶点工厂类型
-          * 获取于当前网格物体的Material 参数
-          * 实质上拉取材质就是从需要绘制的网格物体获取对应材质
-          * 再直接调用材质对应的GetShader 函数完成。
-        * 材质类型
-          * 获取于当前网格物体的VertexFactory 参数
-          * 传给上文提到的材质对应的GetShader 作为参数。
+      -  材质（FMaterial）的GetShader 函数则首先以当前的顶点工厂类型的id 为索引
+          - 通过GetMeshShaderMap 函数从OrderedMeshShaderMaps 成员变量中查询到对应顶点工厂类型的MeshShaderMap
+          -  随后，调用当前的MeshShaderMap 的GetShader 函数, 以当前着色器类型为参数，查询到实际对应的着色器
+        -  实质上获取一组着色器组合需要的三个变量：
+          - 渲染阶段
+            - 直接用代码区分，以模板形式完成定义，例如通过：
+            - TBasePassPS < TUniformLightMapPolicy < Policy >, true >
+          - 顶点工厂类型
+            - 获取于当前网格物体的Material 参数
+            - 实质上拉取材质就是从需要绘制的网格物体获取对应材质
+            - 再直接调用材质对应的GetShader 函数完成。
+          - 材质类型
+            - 获取于当前网格物体的VertexFactory 参数
+            - 传给上文提到的材质对应的GetShader 作为参数
 
 
 

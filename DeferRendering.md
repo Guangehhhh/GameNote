@@ -2,8 +2,6 @@
 ---
 # 延迟渲染 Deferred Rendering ，即延迟着色 DeferredShading
   - 顾名思义，是将着色计算延后进行处理的一种渲染方法，在2004年的GDC上被正式提出
-    - [http://www.tenacioussoftware.com/gdc_2004_deferred_shading.ppt](http://link.zhihu.com/?target=http%3A//www.tenacioussoftware.com/gdc_2004_deferred_shading.ppt)。
-
     - 正向渲染(Forward Rendering)，或称正向着色(ForwardShading)
       - 是渲染物体的一种非常直接的方式，在场景中我们根据所有光源照亮一个物体
         - 之后再渲染下一个物体，以此类推
@@ -175,5 +173,3 @@
       - 辐照度环境映射 (Irradiance Environment Mapping)
 
   - 另外，推荐一个下载CubeMap资源的站点：
-
-http://www.humus.name/index.php?page=Textures

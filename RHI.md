@@ -437,10 +437,9 @@ in the base pass vertex shader, allowing common code to be used regardless of te
 Material graph and will return you the resulting value for that pixel.
 # The “Primitive” Variable
 - Throughout the code you will find references to a variable named “Primitive”
-  - —searching for it in the shader files yields no declaration though!
+  - searching for it in the shader files yields no declaration though!
   -  This is because it’s actually declared on the C++ side through some macro magic.
-  -  This macro declares a struct that is set by the renderer
-    - before each primitive is drawn on the GPU.
+  -  This macro declares a struct that is set by the renderer before each primitive is drawn on the GPU.
 - The full list of variables that it supports can be found in PrimitiveUniformShaderParameters.h
   - from the macro at the top.
 - By default it includes things like LocalToWorld , WorldToLocal , ObjectWorldPositionAndRadius , LightingChannelMask , etc.

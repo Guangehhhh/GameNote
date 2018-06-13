@@ -1,4 +1,4 @@
-## FArchive
+## FArchive 是什么？？
 - 可用于加载，保存和垃圾回收的基类
 - 操作符可以通过想要序列化FName实例的子类来实现
   - 例如FText::SerializeText(* this, Value);
@@ -7,7 +7,7 @@
 - CustomVer
   - 从存档中查询定制版本。如果正在使用档案写入，那么自定义版本必须已经被注册
 
-# UAsset文件格式
+# UAsset文件格式  是什么？
 - UE中使用统一的格式存储资源(uasset, umap)，每个uasset对应一个包(package)，存储一个UPackage对象时，会将该包下的所有对象都存到uasset中。
 - UE的uasset文件格式很像Windows下的DLL文件格式(PE格式)，并且使用起来神似(下一节分析Linker)
   - File Summary 文件头信息
@@ -18,15 +18,15 @@
 - FObjectExport
 - FObjectImport
 
-# BulkData
+# BulkData 是什么？？
   - BulkData是指一大块数据, 它也被存在uasset文件中
   - 但是加载对象的时候可以不加载它，等到需要时在问LinkerLoad要数据，例如UTexture2D的纹理数据的加载
-# Cook
+# Cook 是在做什么？？
 
-# FPackageIndex
-# FLinkerSave
+# FPackageIndex  是什么？？？
+# FLinkerSave 是什么？？？
 - 负责将内存Package中的对象存储到uasset文件
-# FLinkerLoad
+# FLinkerLoad 是什么？？？
 - 负责将uasset文件中的对象加载到内存中，起桥梁作用
 - FLinkerLoad::ELinkerStatus FLinkerLoad::Tick( float InTimeLimit, bool bInUseTimeLimit, bool bInUseFullTimeLimit );
   - 用于解析uasset文件，当bInUseTimeLimit为true时, Tick不会一次性做完解析工作，分时间片进行加载，在一帧里，Tick()不会占用太多时间。
@@ -41,7 +41,7 @@
 - 关于异步加载
   - AsyncLoading,AsyncLoadingThread
 
-# 存档读档
+# 存档读档 是如何实现的？？
 - ArchiveBase
 - 二进制数组 TArray <uint8>
 - 变量格式 - >二进制数组
@@ -64,12 +64,12 @@
 
 
 
-# SaveGame
+# SaveGame 的过程是怎样的？？
 - TArray<uint8> ObjectBytes
 - FMemoryWriter MemoryWriter(ObjectBytes, true);
 - FObjectAndNameAsStringProxyArchive Ar(MemoryWriter, false);
 - SaveGameObject->Serialize(Ar);
-# LoadGame
+# LoadGame 的过程是怎样的 ？？
 - TArray<uint8> ObjectBytes;
 - bool bSuccess = SaveSystem->LoadGame(false, * SlotName, UserIndex, ObjectBytes);
 - FMemoryReader MemoryReader(ObjectBytes, true);
@@ -78,12 +78,12 @@
 - FObjectAndNameAsStringProxyArchive Ar(MemoryReader, true);
 - OutSaveGameObject->Serialize(Ar);
 
-# SaveJason
+# SaveJason 的过程是怎样的 ？？
 - 创建JasonObject 然后调用Set相关变量函数
 - 创建FString OutPut
 - 创建TSharedRef< TJsonWriter<> > Writer = TJsonWriterFactory<>::Create(&OutputString);
 - 调用FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
-# LoadJason
+# LoadJason 的过程是怎样的 ？？
 - TSharedPtr<FJsonObject> JsonReaderObject;
 - TSharedRef< TJsonReader<> > Reader = TJsonReaderFactory<>::Create(OutputString);
 - FJsonSerializer::Deserialize(Reader, JsonReaderObject)

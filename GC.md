@@ -1,6 +1,6 @@
-# GC 垃圾回收
+# GC 垃圾回收 是什么
 ---
-# 分类
+# GC有哪几类？？
 - 引用计数GC
   - 引用计数式GC通过额外的计数来实时计算对单个对象的引用次数，当引用次数为0时回收对象
   - 引用计数的GC是实时的
@@ -39,7 +39,7 @@
     - 它的核心在于在用户程序运行过程中维护年轻分代的根结点集合
   - 分类：追踪式，非实时，精确式，搬迁式，渐进式
 ---
-# 标记清扫（Mark-Sweep）
+# 标记清扫（Mark-Sweep）是什么？？
 - 标记清扫式GC算法是后面介绍的追踪式GC算法的基础，它通过搜索整个系统中对对象的引用来检查对象的可达性，以确定对象是否需要回收
 - 追踪式，非实时，保守(非搬迁式)或者精确式(搬迁式) ，非渐进
 - 标记阶段
@@ -59,7 +59,7 @@
   - 分类：追踪式，非实时，精确式，搬迁式，非渐进
 
 
-# 虚幻4 中的GC
+# 虚幻4 中的GC 是怎么样的？？
 - 是追踪式、非实时、精确式，非渐近、增量回收（时间片）
 - 虚幻4中GC的入口是CollectGarbage()
   - 增量式的（bPerformFullPurge）,非实时的（gc 锁），最后调用了CollectGarbageInternal来执行真正的垃圾回收操作
@@ -94,7 +94,7 @@
       - 同时会处理GCRT_EndofStream的特殊情况，最后加上GCRT_EndOfStream到记号流里面去，并设置CLASS_TokenStreamAssembled标记   
   - UObjectProperty::EmitReferenceInfo的实现
 
-# ReferenceToken
+# ReferenceToken 是什么??
 - 在UObject体系中,每个类都有一个UClass实例用于描述该类的反射信息，使用UProperty来描述每个类成员变量
   - 但是在GC中如果直接遍历UProperty来进行扫描对象引用的话，效率会比较低(因为有许多非Object引用型的Property)
   - 所以ReferenceToken就运用而生了，ReferenceToken是一组token流，描述了类中的对象引用情况
