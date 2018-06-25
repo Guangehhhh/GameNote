@@ -21,3 +21,11 @@
 
 
   游戏运行时如果Global Shader没有编译，会直接报错。
+
+
+
+  材质编译代码是FMaterial::BeginCompileShaderMap, 主要有两步:
+
+   FHLSLMaterialTranslator将材质转成Shader代码.
+
+   FMaterialShaderMap::Compile编译Shader代码.
