@@ -17,8 +17,8 @@
     - 返回的对象将被完全初始化。
       - 如果InFlags包含RF_NeedsLoad（指示对象仍然需要从磁盘加载其对象数据）
       - 则组件不是实例化的（这将发生在PostLoad（））中
-    - StaticConstructObject和StaticAllocateObject的区别在于
-      - StaticConstructObject也会调用对象的类构造函数
+- StaticConstructObject和StaticAllocateObject的区别在哪？？？
+  - StaticConstructObject也会调用对象的类构造函数
   - 这里面主要做两件事：
     - 一是用StaticAllocateObject来分配空间
       - 首先是检查要创建新对象，还是替换一个原有对象，因为一路传进来的有个Name参数
@@ -38,6 +38,15 @@
 ---
 - StaticAllocateObject
 
+
+
+
+# StaticLoadObject
+- 这个函数是会把引用到的资源都load进来的，现在单个uasset（upackage）包含单个资源，但是依然有import/export map，在linkerload处理这个包的时候会在CreateImport的时候把依赖到的对象也加载进来。所以你这里看到的spike很大程度上应该只是spawn的overhead。spawn的确会有可能比较慢，尤其是有大量component要创建和注册的时候，并且在BP里加的component在spawn的时候会特别慢，这个在mainstream里已经改善了，可能在4.12版本里就有相应的优化。另外，actor如果没有collision（Collision Enabled=No Collision）也会带来巨大的spawn time的改善，因为带有collision的actor需要创建PhysX state，也有不小的损耗。
+
+如果你们需要动态Spawn的对象的确相当复杂，但是类型固定的话，也可以考虑用pool来做，或者预先spawn完hide起来。
+
+PS.我猜你说的resetAllloader其实只是用来FlushAsyncLoading用的，FLinkerManager::ResetLoaders是用来清空对应upackage的linkerload的
 ---
 - StaticDuplicateObject
   - 使用指定的Outer和Name创建SourceObject的副本，以及SourceObject包含的所有对象的副本

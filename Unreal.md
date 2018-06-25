@@ -6,9 +6,8 @@
 - 求值—组建空间
 - 覆盖资源
 
-# AnimInstance
 
-
+错误的引用一般肯定是你们自己的逻辑代码引起的。譬如你地图里spawn了个actor，把actor的引用在了一个静态或者gameinstance之类，再或者Asset之类的对象身上了，那么换地图要把整个world都gc掉的时候如果你不先手动清除掉这个引用，就肯定会crash。因为这个actor反向引用了level，再反向引用到world，以致于之前那关地图完全都不能被释放掉
 
 # FRawAnimSequenceTrack
 - 关键帧数组

@@ -13,3 +13,11 @@
 
 - Hull Shader
   - 主要负责定义细分等级（LOD）和相关控制点在细分中的“形变”趋势
+
+
+
+
+  引擎首先调用CompileGlobalShaderMap编译所有的Global Shader；对于Global Shader是判断整个Data Key（CompileGlobalShaderMap, ShaderCompiler.cpp）；如果GetDerivedDataCacheRef().GetSynchronous(* DataKey, CachedData)判断成功，会调用SerializeGlobalShaders序列化Global Shader Map；否则在接下来的VerifyGlobalShaders中会遍历所有的Shader Type编译所有的Global Shader；Shader编译是多线程进行的；编译完成后，会在FShaderCompilingManager::ProcessCompiledShaderMaps中调用SaveGlobalShaderMapToDerivedDataCache将Global Shader Map写回DDC。
+
+
+  游戏运行时如果Global Shader没有编译，会直接报错。
