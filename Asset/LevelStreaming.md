@@ -34,7 +34,10 @@ streaming的话本身就是先加载普通资源（模型，shader），贴图�
 
 
 # WorldTileCollectionModel
+- GenetateLODLevels
 
+# MeshMergeUtilities
+- CreateProxyMesh
 
 
 
