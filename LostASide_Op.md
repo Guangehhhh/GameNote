@@ -48,4 +48,4 @@ o	最佳做法是修改关卡以加入一些主要的遮挡几何图形，这些
 o	使用WorldCompositor进行适当规划有助于提高性能。这将需要确保关卡在足够明显的象限中，并且能够被阻挡以确保引擎不需要加载这些关卡来渲染
 
 
--
+# 使用Hierarchical Instanced Static Mesh Component
