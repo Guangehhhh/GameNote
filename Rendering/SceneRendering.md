@@ -18,21 +18,7 @@
 
 # FViewInfo
 - 具有场景渲染使用的附加状态信息
-- View.PrimitiveVisibilityMap.Init(false,Scene->Primitives.Num());
--	View.DynamicMeshEndIndices.SetNumUninitialized(Scene->Primitives.Num());
--	View.PrimitiveDefinitelyUnoccludedMap.Init(false,Scene->Primitives.Num());
--	View.PotentiallyFadingPrimitiveMap.Init(false,Scene->Primitives.Num());
--	View.PrimitiveFadeUniformBuffers.AddZeroed(Scene->Primitives.Num());
--	View.StaticMeshVisibilityMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshOccluderMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshFadeOutDitheredLODMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshFadeInDitheredLODMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshVelocityMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshShadowDepthMap.Init(false,Scene->StaticMeshes.GetMaxIndex());
--	View.StaticMeshBatchVisibility.AddZeroed(Scene->StaticMeshBatchVisibility.GetMaxIndex());
-- View.VisibleLightInfos.Empty(Scene->Lights.GetMaxIndex());
-- View.StaticMeshEditorSelectionMap.Init(false, Scene->StaticMeshes.GetMaxIndex());
-- View.DirtyPrecomputedLightingBufferPrimitives.Reserve(Scene->Primitives.Num());
+
 # SceneRenderingAllocator
 
 # FPrimitiveViewMasks

@@ -44,7 +44,15 @@ streaming的话本身就是先加载普通资源（模型，shader），贴图�
 # 一个完整的加载逻辑是怎样的？？
   -  最小操作单元从FWorldCompositionTile开始
   - 入口 函数
-  - Level->Tick
+- StartPlayInEditorGameInstance
+	- PlayWorld->FlushLevelStreaming(EFlushLevelStreamingType::Visibility);
+	- BlockTillLevelStreamingCompleted
+		- InWorld->ProcessLevelStreamingVolumes();
+		- InWorld->WorldComposition->UpdateStreamingState();
+		- InWorld->UpdateLevelStreaming();
+	- PlayWorld->BeginPlay()
+
+- Level->Tick
     - WorldComposition->UpdateStreamingState
       - UWorld::ProcessLevelStreamingVolumes()
 - 如果拓展 怎么拓展？？
